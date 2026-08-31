@@ -1,12 +1,22 @@
 mod balances;
 mod system;
 
+// These are the cincrete types we will use in our simple state machine.
+// Modules are configurated for these types directly,
+// and they satisfy all of our trait requirements.
+mod types {
+    pub type AccountID = String;
+    pub type Balance = u128;
+    pub type BlockNumber = u32;
+    pub type Nonce = u32;
+}
+
 // This is our main Runtime.
 // It accumulates all of the different pallets we want to use.
 #[derive(Debug)]
 pub struct Runtime {
-    system: system::Pallet,
-    balances: balances::Pallet,
+    system: system::Pallet<types::AccountID,types::BlockNumber,types::Nonce>,
+    balances: balances::Pallet<types::AccountID, types::Balance>,
 }
 
 impl Runtime {
