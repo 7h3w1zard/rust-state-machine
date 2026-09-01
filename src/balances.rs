@@ -11,7 +11,7 @@ pub trait Config: crate::system::Config {
 #[derive(Debug)]
 pub struct Pallet<T: Config> {
     // A simple storage mapping from accounts to their balances.
-    balances: BTreeMap<T::AccountID, T::Balance>,
+    balances: BTreeMap<T::AccountId, T::Balance>,
 }
 
 impl<T: Config> Pallet<T> {
@@ -22,12 +22,12 @@ impl<T: Config> Pallet<T> {
         }
     }
     /// Set the balance o an account `who` to some `amount`.
-    pub fn set_balance(&mut self, who: &T::AccountID, amount: T::Balance) {
+    pub fn set_balance(&mut self, who: &T::AccountId, amount: T::Balance) {
         self.balances.insert(who.clone(), amount);
     }
     /// Get the balnce of an account `who`.
     /// If the account has no stored balance, we return zero(0).
-    pub fn balance(&self, who: &T::AccountID) -> T::Balance {
+    pub fn balance(&self, who: &T::AccountId) -> T::Balance {
         *self.balances.get(who).unwrap_or(&T::Balance::zero())
     }
     /// Transfer `amount` from one account to another.
@@ -35,8 +35,8 @@ impl<T: Config> Pallet<T> {
     /// and that no mathematical overflows occur.
     pub fn transfer(
         &mut self,
-        caller: &T::AccountID,
-        to: &T::AccountID,
+        caller: &T::AccountId,
+        to: &T::AccountId,
         amount: T::Balance,
     ) -> Result<(), &'static str> {
         let from_balance = self.balance(&caller);
@@ -62,7 +62,7 @@ mod tests {
     struct TestConfig;
 
     impl system::Config for TestConfig {
-        type AccountID = String;
+        type AccountId = String;
         type BlockNumber = u32;
         type Nonce = u32;
     }
