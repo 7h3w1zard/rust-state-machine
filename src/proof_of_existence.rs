@@ -65,6 +65,28 @@ impl<T: Config> Pallet<T> {
     }
 }
 
+// A public enum which describes the calls
+// we want to expose to the dispatcher.
+// We should expect that the caller of each call will be provided by
+// the dispatcher, and not included as a parameter of the call.
+pub enum Call<T: Config> {
+    CreateClaim { claim: T::Content },
+    RevokeClaim { claim: T::Content },
+}
+/// Implementation of the dispath logic, mapping from `PoECall`
+/// to the approriate underlying function we want to execute.
+impl<T: Config> crate::support::Dispatch for Pallet<T> {
+    type Caller = T::AccountId;
+    type Call = Call<T>;
+
+    fn dispatch(&mut self, caller: Self::Caller, call: Self::Call) -> DispatchResult {
+        match call {
+            Call::CreateClaim { claim } => self.create_claim(caller, claim),
+            Call::RevokeClaim { claim } => self.revoke_claim(caller, claim),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::proof_of_existence;
@@ -90,7 +112,7 @@ mod test {
                 - Check that all functions work successfully.
                 - Check that all error conditions error as expected.
         */
-        
+
         let mut proof_of_existence = proof_of_existence::Pallet::<TestConfig>::new();
         assert_eq!(proof_of_existence.claims.len(), 0);
 
@@ -101,28 +123,22 @@ mod test {
 
         let _ = proof_of_existence.create_claim(alice, alice_claim);
         assert_eq!(proof_of_existence.get_claim(alice_claim), Some(alice));
-        
+
         let _ = proof_of_existence.create_claim(bob, bob_claim);
         assert_ne!(proof_of_existence.get_claim(bob_claim), Some(alice));
         assert_eq!(proof_of_existence.get_claim(bob_claim), Some(bob));
 
         let res = proof_of_existence.revoke_claim(bob, alice_claim);
-        assert!(res.is_err_and(|err| {
-            err.eq("you are not an owner")
-        }));
-        
+        assert!(res.is_err_and(|err| { err.eq("you are not an owner") }));
+
         let _ = proof_of_existence.revoke_claim(bob, bob_claim);
         let res = proof_of_existence.get_claim(bob_claim);
         assert_eq!(res, None);
-        
+
         let res = proof_of_existence.revoke_claim(bob, bob_claim);
-        assert!(res.is_err_and(|err| {
-            err.eq("claim doesn't exist")
-        }));
+        assert!(res.is_err_and(|err| { err.eq("claim doesn't exist") }));
 
         let res = proof_of_existence.create_claim(bob, alice_claim);
-        assert!(res.is_err_and(|err| {
-            err.eq("this content is already claimed")
-        }));
+        assert!(res.is_err_and(|err| { err.eq("this content is already claimed") }));
     }
 }
