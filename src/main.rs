@@ -1,6 +1,7 @@
 mod balances;
 mod support;
 mod system;
+mod proof_of_existence;
 
 // These are the cincrete types we will use in our simple state machine.
 // Modules are configurated for these types directly,
