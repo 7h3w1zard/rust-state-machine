@@ -73,7 +73,11 @@ impl<T: Config> crate::support::Dispatch for Pallet<T> {
     type Caller = T::AccountId;
     type Call = Call<T>;
 
-    fn dispatch(&mut self, caller: Self::Caller, call: Self::Call) -> crate::support::DispatchResult {
+    fn dispatch(
+        &mut self,
+        caller: Self::Caller,
+        call: Self::Call,
+    ) -> crate::support::DispatchResult {
         match call {
             Call::Transfer { to, amount } => {
                 self.transfer(&caller, &to, amount)?;
