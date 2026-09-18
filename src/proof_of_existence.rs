@@ -23,17 +23,8 @@ pub struct Pallet<T: Config> {
     claims: BTreeMap<T::Content, T::AccountId>,
 }
 
+#[macros::call]
 impl<T: Config> Pallet<T> {
-    /// Create a new instance of the Proof of Existence Module.
-    pub fn new() -> Self {
-        Self {
-            claims: BTreeMap::new(),
-        }
-    }
-    /// Get the owner (if any) of a claim.
-    pub fn get_claim(&self, claim: &T::Content) -> Option<&T::AccountId> {
-        self.claims.get(claim)
-    }
     /// Create a new claim on behalf of the `caller`.
     /// This function will return an error
     /// if someone already has claimed that content.
@@ -64,26 +55,16 @@ impl<T: Config> Pallet<T> {
         Ok(())
     }
 }
-
-// A public enum which describes the calls
-// we want to expose to the dispatcher.
-// We should expect that the caller of each call will be provided by
-// the dispatcher, and not included as a parameter of the call.
-pub enum Call<T: Config> {
-    CreateClaim { claim: T::Content },
-    RevokeClaim { claim: T::Content },
-}
-/// Implementation of the dispath logic, mapping from `PoECall`
-/// to the approriate underlying function we want to execute.
-impl<T: Config> crate::support::Dispatch for Pallet<T> {
-    type Caller = T::AccountId;
-    type Call = Call<T>;
-
-    fn dispatch(&mut self, caller: Self::Caller, call: Self::Call) -> DispatchResult {
-        match call {
-            Call::CreateClaim { claim } => self.create_claim(caller, claim),
-            Call::RevokeClaim { claim } => self.revoke_claim(caller, claim),
+impl<T: Config> Pallet<T> {
+    /// Create a new instance of the Proof of Existence Module.
+    pub fn new() -> Self {
+        Self {
+            claims: BTreeMap::new(),
         }
+    }
+    /// Get the owner (if any) of a claim.
+    pub fn get_claim(&self, claim: &T::Content) -> Option<&T::AccountId> {
+        self.claims.get(claim)
     }
 }
 

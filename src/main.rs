@@ -150,13 +150,13 @@ fn main() {
         extrinsics: vec![
             support::Extrinsic {
                 caller: bob.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim {
+                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::create_claim {
                     claim: "my_doc",
                 }),
             },
             support::Extrinsic {
                 caller: alice.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim {
+                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::create_claim {
                     claim: "rustonomicon",
                 }),
             },
